@@ -1,0 +1,8 @@
+# Copy to your private orchestrator as profiles/personal/values and fill in.
+# Rendered into the public base files (gitconfig, zshrc, ssh/config, CLAUDE.md, ...).
+# Identifiers only - never put private keys or tokens here.
+GH_USER=your-github-username
+GIT_EMAIL=you@users.noreply.github.com
+GIT_NAME=Your Name
+# Basename of your SSH signing/identity key under ~/.ssh (without .pub).
+SIGNING_KEY=id_ed25519

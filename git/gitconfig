@@ -1,0 +1,27 @@
+[user]
+	email = @@GIT_EMAIL@@
+	name = @@GIT_NAME@@
+	signingkey = ~/.ssh/@@SIGNING_KEY@@.pub
+[gpg]
+	format = ssh
+[commit]
+	gpgsign = true
+[gpg "ssh"]
+	allowedSignersFile = ~/.ssh/allowed_signers
+[credential "https://github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[core]
+	editor = zed --wait
+	excludesfile = ~/.config/git/ignore
+[pull]
+	rebase = true
+[filter "gitnexus-strip"]
+	clean = sed '/<!-- gitnexus:start -->/,/<!-- gitnexus:end -->/d'
+	smudge = cat
+	required = false
+# Personal identity above is the global default. The optional work layer
+# (`setup --with-work`) appends includeIf blocks that override specific orgs.

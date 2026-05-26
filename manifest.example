@@ -1,0 +1,7 @@
+# Public repos the orchestrator clones into ~/GitRepos/<name> and lays down.
+# Copy to your private orchestrator as `manifest` and point the URLs at your forks.
+# Format (whitespace-separated): <name> <git-url> <ref>
+warp-claude-workflow   https://github.com/your-user/warp-claude-workflow.git    main
+claude-code-config     https://github.com/your-user/claude-code-config.git      main
+shell-editor-dotfiles  https://github.com/your-user/shell-editor-dotfiles.git   main
+mac-dev-bootstrap      https://github.com/your-user/mac-dev-bootstrap.git        main

@@ -1,0 +1,4 @@
+**/.claude/settings.local.json
+
+# Claude Code agent worktrees live inside the repo but must never be tracked
+.claude/worktrees/

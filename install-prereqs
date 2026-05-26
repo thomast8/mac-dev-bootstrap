@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# install-prereqs - install generic dev tooling for a fresh Mac. Idempotent; no auth.
+# Identity-specific steps (SSH keygen, plugin source repos) live in the private
+# orchestrator's setup, not here.
+set -euo pipefail
+HERE="$(cd "$(dirname "$0")" && pwd)"
+
+# --- Homebrew ---
+if ! command -v brew >/dev/null 2>&1; then
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+eval "$(/opt/homebrew/bin/brew shellenv)" 2>/dev/null || true
+
+# --- Formulae + casks ---
+brew bundle --file="$HERE/Brewfile" --no-lock
+
+# --- oh-my-zsh (non-interactive, no shell switch) ---
+if [ ! -d "${HOME}/.oh-my-zsh" ]; then
+  RUNZSH=no CHSH=no sh -c \
+    "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+
+# --- oh-my-zsh community plugins (not in brew) ---
+ZSH_CUSTOM="${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}"
+clone_omz() {
+  [ -d "${ZSH_CUSTOM}/plugins/$1" ] || \
+    git clone --depth=1 "https://github.com/zsh-users/$1" "${ZSH_CUSTOM}/plugins/$1"
+}
+clone_omz zsh-autosuggestions
+clone_omz zsh-syntax-highlighting
+
+# --- npm globals ---
+npm_g() { npm list -g "$1" --depth=0 >/dev/null 2>&1 || npm install -g "$1"; }
+npm_g "@anthropic-ai/claude-code"
+npm_g "@openai/codex"
+npm_g gitnexus
+npm_g "@mermaid-js/mermaid-cli"
+npm_g ccusage
+
+echo "install-prereqs complete."
