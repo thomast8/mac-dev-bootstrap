@@ -54,6 +54,9 @@ if [ ! -d "$ORCH_DIR/.git" ]; then
     exit 1
   fi
   git clone "https://github.com/${ORCH_REPO}.git" "$ORCH_DIR"
+else
+  git -C "$ORCH_DIR" fetch origin
+  git -C "$ORCH_DIR" pull --ff-only
 fi
 
 # 6. Hand off (forward any extra args, e.g. --with-work)
