@@ -17,9 +17,7 @@ brew "lazygit"
 brew "just"
 brew "tmux"
 
-# --- languages / runtimes ---
-brew "go"
-brew "rust"
+# --- language/runtime baseline ---
 brew "python@3.13"
 brew "uv"                # Python package manager
 
@@ -27,4 +25,5 @@ brew "uv"                # Python package manager
 cask "warp"              # primary terminal
 cask "zed"               # primary editor
 cask "claude"            # Claude desktop app
+cask "superwhisper"      # dictation app
 cask "docker-desktop"
