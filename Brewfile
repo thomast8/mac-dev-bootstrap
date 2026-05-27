@@ -1,5 +1,5 @@
 # Brewfile - dev tools for the Warp-centric Claude Code stack.
-# Install with: brew bundle --file=Brewfile --no-lock
+# Install with: brew bundle --file=Brewfile
 
 # --- CLI tools ---
 brew "git"
