@@ -42,10 +42,19 @@ command -v gh >/dev/null 2>&1 || brew install gh
 
 # 4. Authenticate (interactive) the account that owns the orchestrator
 gh auth status >/dev/null 2>&1 || gh auth login
+gh auth setup-git
 
-# 5. Clone the orchestrator
+# 5. Clone the orchestrator. Use authenticated HTTPS here because a fresh Mac may
+#    not have its SSH signing or auth keys restored until the orchestrator runs.
 mkdir -p "$GIT_REPOS"
-[ -d "$ORCH_DIR/.git" ] || gh repo clone "$ORCH_REPO" "$ORCH_DIR"
+if [ ! -d "$ORCH_DIR/.git" ]; then
+  if [ -e "$ORCH_DIR" ]; then
+    printf 'Orchestrator path exists but is not a git repo: %s\n' "$ORCH_DIR" >&2
+    printf 'Move it aside, or remove it if it is an empty failed clone, then re-run.\n' >&2
+    exit 1
+  fi
+  git clone "https://github.com/${ORCH_REPO}.git" "$ORCH_DIR"
+fi
 
 # 6. Hand off (forward any extra args, e.g. --with-work)
 exec "$ORCH_DIR/setup" "$@"
