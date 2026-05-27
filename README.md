@@ -1,6 +1,6 @@
 # mac-dev-bootstrap
 
-Bootstrap framework for a Warp + Claude Code Mac, from a **bare machine** (no git, no Homebrew, no Xcode CLT) to a fully configured stack. This is the reusable, identity-free core; your personal data lives in a separate private orchestrator.
+Bootstrap framework for a Warp + Claude Code + Codex Mac, from a **bare machine** (no git, no Homebrew, no Xcode CLT) to a fully configured stack. This is the reusable, identity-free core; your personal data lives in a separate private orchestrator.
 
 ## One-liner
 
@@ -20,6 +20,8 @@ mac-dev-bootstrap (public)      this repo: bare-mac.sh, Brewfile, install-prereq
                                 lib/render.sh, templated git/ + ssh/, manifest.example
 warp-claude-workflow (public)   -> ~/.warp   (Warp config + worktree tabs)
 claude-code-config   (public)   -> ~/.claude (generic Claude Code config)
+Codex-config         (private)  -> ~/.Codex  (portable Codex config)
+codex-plugins        (public)   -> Codex plugin source and skill/workflow packages
 shell-editor-dotfiles(public)   -> ~/.zshrc + ~/.config/zed
 your-orchestrator    (private)  manifest (which public repos), profiles/personal +
                                 profiles/work (values + overlay), setup [--with-work]
@@ -27,7 +29,7 @@ your-orchestrator    (private)  manifest (which public repos), profiles/personal
 
 **Templating.** Public files carry `@@TOKEN@@` placeholders (`@@GH_USER@@`, `@@GIT_EMAIL@@`, `@@GIT_NAME@@`, `@@SIGNING_KEY@@`) rendered by `lib/render.sh` from `profiles/personal/values`. Identifiers only - never secrets or private keys.
 
-**Profiles.** The default install is personal-only and fully self-contained. `setup --with-work` layers in *additive* work fragments (a `gitconfig-work` + `includeIf`, a `~/.config/zsh/work.zsh` org->account map, an extra MCP server, an appended CLAUDE.md section) so the work layer never lands where it isn't wanted.
+**Profiles.** The default install is personal-only and fully self-contained. `setup --with-work` layers in *additive* work fragments (a `gitconfig-work` + `includeIf`, a `~/.config/zsh/work.zsh` org->account map, an extra MCP server, an appended CLAUDE.md section) so the work layer never lands where it isn't wanted. The private orchestrator may also ask which agent runtimes to install, defaulting to both Claude Code and Codex.
 
 ## In this repo
 
@@ -40,4 +42,4 @@ your-orchestrator    (private)  manifest (which public repos), profiles/personal
 
 ## Adopt it
 
-Fork the four public repos, create a **private** orchestrator with a `manifest` (from `manifest.example`), `profiles/personal/values` (from `values.example`), any `profiles/*/overlay` fragments, and a `setup` that renders + lays everything down. Then run the one-liner.
+Fork the public repos, create a **private** orchestrator with a `manifest` (from `manifest.example`), `profiles/personal/values` (from `values.example`), any `profiles/*/overlay` fragments, and a `setup` that renders + lays everything down. Then run the one-liner.

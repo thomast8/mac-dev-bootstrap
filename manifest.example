@@ -3,5 +3,7 @@
 # Format (whitespace-separated): <name> <git-url> <ref>
 warp-claude-workflow   https://github.com/your-user/warp-claude-workflow.git    main
 claude-code-config     https://github.com/your-user/claude-code-config.git      main
+Codex-config           https://github.com/your-user/Codex-config.git            main
+codex-plugins          https://github.com/your-user/codex-plugins.git           main
 shell-editor-dotfiles  https://github.com/your-user/shell-editor-dotfiles.git   main
 mac-dev-bootstrap      https://github.com/your-user/mac-dev-bootstrap.git        main
