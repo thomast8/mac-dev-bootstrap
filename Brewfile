@@ -1,6 +1,9 @@
 # Brewfile - dev tools for the Warp-centric Claude Code stack.
 # Install with: brew bundle --file=Brewfile
 
+# --- taps ---
+tap "withgraphite/tap"
+
 # --- CLI tools ---
 brew "git"
 brew "gh"
@@ -9,7 +12,7 @@ brew "jq"
 brew "fzf"               # PR-picker fallback in the worktree scripts
 brew "ripgrep"
 brew "age"               # encrypted SSH key bundle (decrypted during setup)
-brew "graphite"          # gt (optional; plain-git-first workflow)
+brew "withgraphite/tap/graphite" # gt (optional; plain-git-first workflow)
 brew "lazygit"
 brew "just"
 brew "tmux"
@@ -18,7 +21,7 @@ brew "tmux"
 brew "go"
 brew "rust"
 brew "python@3.13"
-brew "astral-sh/tap/uv"  # uv (Python package manager)
+brew "uv"                # Python package manager
 
 # --- dev apps ---
 cask "warp"              # primary terminal
