@@ -26,6 +26,5 @@ brew "uv"                # Python package manager
 # --- dev apps ---
 cask "warp"              # primary terminal
 cask "zed"               # primary editor
-cask "visual-studio-code"
 cask "claude"            # Claude desktop app
 cask "docker-desktop"
