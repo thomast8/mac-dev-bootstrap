@@ -8,6 +8,7 @@ brew "node"
 brew "jq"
 brew "fzf"               # PR-picker fallback in the worktree scripts
 brew "ripgrep"
+brew "age"               # encrypted SSH key bundle (decrypted during setup)
 brew "graphite"          # gt (optional; plain-git-first workflow)
 brew "lazygit"
 brew "just"
