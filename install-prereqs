@@ -5,32 +5,54 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 
+log() {
+  printf '\n==> [%s] %s\n' "$(date '+%H:%M:%S')" "$*"
+}
+
 # --- Homebrew ---
 if ! command -v brew >/dev/null 2>&1; then
+  log "Installing Homebrew"
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 eval "$(/opt/homebrew/bin/brew shellenv)" 2>/dev/null || true
 
 # --- Formulae + casks ---
-brew bundle --file="$HERE/Brewfile"
+log "Using Homebrew at $(command -v brew)"
+log "Installing Brewfile dependencies from $HERE/Brewfile"
+brew bundle list --all --file="$HERE/Brewfile"
+brew bundle --verbose --file="$HERE/Brewfile"
 
 # --- oh-my-zsh (non-interactive, no shell switch) ---
 if [ ! -d "${HOME}/.oh-my-zsh" ]; then
+  log "Installing oh-my-zsh"
   RUNZSH=no CHSH=no sh -c \
     "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+else
+  log "oh-my-zsh already installed"
 fi
 
 # --- oh-my-zsh community plugins (not in brew) ---
 ZSH_CUSTOM="${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}"
 clone_omz() {
-  [ -d "${ZSH_CUSTOM}/plugins/$1" ] || \
+  if [ -d "${ZSH_CUSTOM}/plugins/$1" ]; then
+    log "oh-my-zsh plugin already installed: $1"
+  else
+    log "Installing oh-my-zsh plugin: $1"
     git clone --depth=1 "https://github.com/zsh-users/$1" "${ZSH_CUSTOM}/plugins/$1"
+  fi
 }
 clone_omz zsh-autosuggestions
 clone_omz zsh-syntax-highlighting
 
 # --- npm globals ---
-npm_g() { npm list -g "$1" --depth=0 >/dev/null 2>&1 || npm install -g "$1"; }
+npm_g() {
+  if npm list -g "$1" --depth=0 >/dev/null 2>&1; then
+    log "npm global already installed: $1"
+  else
+    log "Installing npm global: $1"
+    npm install -g "$1"
+  fi
+}
 npm_g "@anthropic-ai/claude-code"
 npm_g "@openai/codex"
 npm_g gitnexus
