@@ -23,5 +23,9 @@
 	clean = sed '/<!-- gitnexus:start -->/,/<!-- gitnexus:end -->/d'
 	smudge = cat
 	required = false
+[wlaunch]
+	# gh account for token injection (wlaunch + ~/.warp/bin scripts). Must stay
+	# ABOVE the includeIf blocks so the work layer's value wins for work repos.
+	ghaccount = @@GH_USER@@
 # Personal identity above is the global default. The optional work layer
 # (`setup --with-work`) appends includeIf blocks that override specific orgs.
