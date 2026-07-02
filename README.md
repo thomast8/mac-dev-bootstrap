@@ -36,7 +36,7 @@ your-orchestrator    (private)  manifest (which public repos), profiles/personal
 - `bare-mac.sh` - the bootstrap entry point (run raw via curl; takes `ORCH_REPO`).
 - `Brewfile` - formulae + casks (git, gh, node, uv, warp, zed, ...).
 - `install-prereqs` - generic tooling: Homebrew, the Brewfile, oh-my-zsh + plugins, npm globals.
-- `lib/render.sh` - the `@@TOKEN@@` substitution engine.
+- `lib/render.sh` - the `@@TOKEN@@` substitution engine. Warns on stderr when a rendered file still contains an unresolved `@@TOKEN@@` (missing values key or template typo); set `RENDER_STRICT=1` to make that a hard failure.
 - `git/`, `ssh/` - templated `gitconfig`, global git `ignore`, and ssh `config`.
 - `manifest.example`, `values.example` - copy these into your private orchestrator.
 
