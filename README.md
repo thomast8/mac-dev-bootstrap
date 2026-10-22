@@ -1,6 +1,6 @@
 # mac-dev-bootstrap
 
-Bootstrap framework for a Warp + Claude Code + Codex Mac, from a **bare machine** (no git, no Homebrew, no Xcode CLT) to a fully configured stack. This is the reusable, identity-free core; your personal data lives in a separate private orchestrator.
+Bootstrap framework for a Claude Code + Codex Mac, from a **bare machine** (no git, no Homebrew, no Xcode CLT) to a fully configured stack. This is the reusable, identity-free core; your personal data lives in a separate private orchestrator.
 
 ## One-liner
 
@@ -18,7 +18,6 @@ A **private orchestrator** repo wires together this framework and several **publ
 ```
 mac-dev-bootstrap (public)      this repo: bare-mac.sh, Brewfile, install-prereqs,
                                 lib/render.sh, templated git/ + ssh/, manifest.example
-warp-claude-workflow (public)   -> ~/.warp   (Warp config + worktree tabs)
 claude-code-config   (public)   -> ~/.claude (generic Claude Code config)
 Codex-config         (private)  -> ~/.Codex  (portable Codex config)
 codex-plugins        (public)   -> Codex plugin source and skill/workflow packages
@@ -34,7 +33,7 @@ your-orchestrator    (private)  manifest (which public repos), profiles/personal
 ## In this repo
 
 - `bare-mac.sh` - the bootstrap entry point (run raw via curl; takes `ORCH_REPO`).
-- `Brewfile` - formulae + casks (git, gh, node, uv, warp, zed, ...).
+- `Brewfile` - formulae + casks (git, gh, node, uv, zed, ...).
 - `install-prereqs` - generic tooling: Homebrew, the Brewfile, oh-my-zsh + plugins, npm globals.
 - `lib/render.sh` - the `@@TOKEN@@` substitution engine. Warns on stderr when a rendered file still contains an unresolved `@@TOKEN@@` (missing values key or template typo); set `RENDER_STRICT=1` to make that a hard failure.
 - `git/`, `ssh/` - templated `gitconfig`, global git `ignore`, and ssh `config`.

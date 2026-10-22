@@ -1,4 +1,4 @@
-# Brewfile - dev tools for the Warp-centric Claude Code stack.
+# Brewfile - dev tools for the Claude Code + Codex stack.
 # Install with: brew bundle --file=Brewfile
 
 # --- taps ---
@@ -14,17 +14,14 @@ brew "ripgrep"
 brew "age"               # encrypted SSH key bundle (decrypted during setup)
 brew "withgraphite/tap/graphite" # gt (optional; plain-git-first workflow)
 brew "lazygit"
-brew "serie"             # commit-graph TUI (a wlaunch launch target)
 brew "just"
 brew "tmux"
 
 # --- language/runtime baseline ---
 brew "python@3.13"
 brew "uv"                # Python package manager
-brew "go"                # build toolchain for wlaunch (github.com/thomast8/wlaunch)
 
 # --- dev apps ---
-cask "warp"              # primary terminal
 cask "zed"               # primary editor
 cask "claude"            # Claude desktop app
 cask "superwhisper"      # dictation app
