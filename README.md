@@ -38,6 +38,7 @@ your-orchestrator    (private)  manifest (which public repos), profiles/personal
 - `install-prereqs` - generic tooling: Homebrew, the Brewfile, oh-my-zsh + plugins, npm globals.
 - `lib/render.sh` - the `@@TOKEN@@` substitution engine. Warns on stderr when a rendered file still contains an unresolved `@@TOKEN@@` (missing values key or template typo); set `RENDER_STRICT=1` to make that a hard failure.
 - `git/`, `ssh/` - templated `gitconfig`, global git `ignore`, and ssh `config`.
+- `guards/` - `ui-guard` (every 15 s: renices heavy agent workers to +10 and pauses them for 30 s when WindowServer is busy and the CPU is saturated, memory pressure is critical, or the disk is nearly full) and `disk-guard.sh` (weekly cache and stale-worktree cleanup), with their launch agents. `guards/install VALUES` lays them down and reloads the agents; VALUES must define `HOME`.
 - `manifest.example`, `values.example` - copy these into your private orchestrator.
 
 ## Adopt it
