@@ -1,0 +1,72 @@
+#!/bin/bash
+# ui-guard: keeps the screen responsive while agents (Codex, Claude, the Xcode queue) work.
+#
+#   ui-guard tick            one pass; the launch agent runs it every 15 s
+#   ui-guard pause [secs]    panic button: SIGSTOP every heavy worker (default 30 s), then resume
+#   ui-guard resume          resume whatever ui-guard paused
+#   ui-guard status
+#
+# A tick renices heavy workers to +10 so WindowServer always wins the CPU, and pauses them
+# for 30 s when WindowServer sits above 60% for two ticks, memory pressure turns critical, or the
+# disk drops under 5 GB. Only workers are touched, never the agents themselves (codex,
+# claude), and nothing is ever killed.
+set -u
+STATE="$HOME/.local/state/ui-guard"; mkdir -p "$STATE"; touch "$STATE/paused"; LOG="$STATE/ui-guard.log"
+WORKERS='^(python[0-9.]*|Python|pytest|swift-frontend|swift-build|swift-test|swiftc|clang|ld|xcodebuild|xctest|node|repowise|bsdtar|tar|ditto|rsync|ruby|java|cargo|rustc|go)$'
+
+log() { echo "[$(date '+%F %T')] $*" >> "$LOG"; }
+notify() { osascript -e "display notification \"$1\" with title \"ui-guard\"" >/dev/null 2>&1; }
+free_gb() { df -g /System/Volumes/Data | awk 'NR==2{print $4}'; }
+# 1 normal, 2 warn, 4 critical. Not load average: a booting Simulator pushes it past 150 on idle CPU.
+mem_pressure() { sysctl -n kern.memorystatus_vm_pressure_level; }
+ws_cpu() { top -l 2 -s 1 -pid "$(pgrep -x WindowServer)" -stats cpu 2>/dev/null | tail -1 | tr -d ' ' | cut -d. -f1; }
+# pid nice name, for every worker above 15% CPU
+heavy() { ps -Ao pid,%cpu,ni,comm | awk -v re="$WORKERS" 'NR>1 {n=$4; sub(/.*\//,"",n); if ($2+0 > 15 && n ~ re) print $1, $3, n}'; }
+
+govern() {
+  heavy | while read -r pid ni name; do
+    [ "${ni:-0}" -lt 10 ] && renice -n 10 -p "$pid" >/dev/null 2>&1 && log "nice +10 $name $pid"
+  done
+}
+
+pause() {
+  heavy | awk '{print $1}' > "$STATE/paused"
+  [ -s "$STATE/paused" ] || { log "pause: nothing heavy"; return; }
+  echo $(( $(date +%s) + ${1:-30} + 5 )) > "$STATE/until"
+  trap resume EXIT  # a killed or crashed pause must never leave workers stopped
+  xargs kill -STOP < "$STATE/paused" 2>/dev/null
+  log "paused ${1:-30}s: $(tr '\n' ' ' < "$STATE/paused")"
+  notify "Paused $(wc -l < "$STATE/paused" | tr -d ' ') heavy processes for ${1:-30} s"
+  sleep "${1:-30}"
+  resume
+}
+
+resume() {
+  [ -s "$STATE/paused" ] || return 0
+  xargs kill -CONT < "$STATE/paused" 2>/dev/null
+  log "resumed: $(tr '\n' ' ' < "$STATE/paused")"
+  : > "$STATE/paused"
+}
+
+tick() {
+  # leftovers from a pause that was SIGKILLed before it could resume
+  [ "$(date +%s)" -gt "$(cat "$STATE/until" 2>/dev/null || echo 0)" ] && resume
+  govern
+  c=$(ws_cpu); c=${c:-0}; prev=$(cat "$STATE/ws_prev" 2>/dev/null || echo 0); echo "$c" > "$STATE/ws_prev"
+  m=$(mem_pressure); f=$(free_gb)
+  if [ "$c" -gt 60 ] && [ "$prev" -gt 60 ]; then log "WindowServer ${c}% twice"; pause 30
+  elif [ "$m" -ge 4 ]; then log "memory pressure critical"; pause 30
+  elif [ "$f" -lt 5 ]; then log "disk ${f}G free"; notify "Only ${f} GB free"; pause 30
+  fi
+}
+
+status() {
+  echo "WindowServer $(ws_cpu)%   memory pressure $(mem_pressure)   free $(free_gb)G   paused: $(tr '\n' ' ' < "$STATE/paused" 2>/dev/null)"
+  echo "heavy workers (pid nice name):"; heavy | sed 's/^/  /'
+  echo "log:"; tail -5 "$LOG" 2>/dev/null | sed 's/^/  /'
+}
+
+case "${1:-status}" in
+  tick) tick ;; pause) pause "${2:-30}" ;; resume) resume ;; status) status ;;
+  *) echo "usage: ui-guard tick | pause [secs] | resume | status"; exit 2 ;;
+esac

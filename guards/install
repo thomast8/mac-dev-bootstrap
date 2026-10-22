@@ -1,0 +1,18 @@
+#!/bin/bash
+# install: lay down ui-guard + disk-guard and (re)load their launch agents. Idempotent.
+#   guards/install VALUES     VALUES must define HOME (the orchestrator's effective values do)
+set -eu
+here=$(cd "$(dirname "$0")" && pwd)
+values=${1:?usage: guards/install VALUES}
+render="$here/../lib/render.sh"
+mkdir -p "$HOME/.local/bin" "$HOME/.local/state/ui-guard" "$HOME/Library/LaunchAgents"
+install -m 755 "$here/ui-guard" "$here/disk-guard.sh" "$HOME/.local/bin/"
+for src in "$here"/LaunchAgents/*.plist; do
+  label=$(basename "$src" .plist); dst="$HOME/Library/LaunchAgents/$label.plist"
+  RENDER_STRICT=1 "$render" "$values" "$src" > "$dst.tmp" && mv "$dst.tmp" "$dst"
+  launchctl bootout "gui/$(id -u)/$label" 2>/dev/null || true
+  # bootout returns before the job is gone; bootstrapping too early fails with error 5
+  for _ in 1 2 3 4 5 6 7 8 9 10; do launchctl print "gui/$(id -u)/$label" >/dev/null 2>&1 || break; sleep 0.5; done
+  launchctl bootstrap "gui/$(id -u)" "$dst"
+done
+echo "guards: ui-guard + disk-guard installed (ui-guard status to check)"
